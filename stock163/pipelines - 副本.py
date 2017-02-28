@@ -8,7 +8,7 @@
 import os
 def ParseFilePath(url):
     # user should change this folder path
-    outfolder = "e:\\data\\FinTech\\News"
+    outfolder = "e:\\data\\FinTech\\News\\Stocks\\60000"
     components = url.split("/")
     year = components[3]
     monthday=components[4]
@@ -16,26 +16,39 @@ def ParseFilePath(url):
     day = monthday[2:]
     idx=components[5]
     page=idx+"_"+components[6]
-    folder = outfolder + "\\%s\\%s\\%s\\" % (year, month, day)
-    filepath = folder + "%s.txt" % (page) 
+    #folder = outfolder + "\\%s_%s_%s_" % (year, month, day)
+    folder = outfolder
+    if ((year=='') | ('keywords' in page)):
+       filepath='xxx'
+    else:
+       filepath = folder + "\\%s_%s_%s_%s.txt" % (year, month, day, page) 
     filepath=filepath.replace('?', '_')
     return(folder, filepath)
 
-class Money163Pipeline(object):   
+class Stock163Pipeline(object):   
     def process_item(self, item, spider):
-        if spider.name != "moneynews":  return item
+        if spider.name != "stocknews":  return item
         if item.get("news_thread", None) is None: return item
                 
         url = item['news_url']
+        if 'keywords' in url:
+           return item
         folder, filepath = ParseFilePath(url)
-        
+        spider.counter = spider.counter+1
+        counterfilepath = folder+"\\counter.txt"
         #one a single machine will is virtually no risk of race-condition
         if not os.path.exists(folder):
            os.makedirs(folder)        
-        print(filepath)
-        fo = open(filepath, 'w', encoding='utf')
-        fo.write(str(dict(item)))
+        #print(filepath, counterfilepath)
+        #print(spider.stats)
+        fo = open(counterfilepath, "w", encoding="UTF-8")
+        fo.write(str(spider.counter))
         fo.close()
+
+        if (filepath!='xxx'):
+           fo = open(filepath, 'w', encoding='utf-8')
+           fo.write(str(dict(item)))
+           fo.close()
         return None
         
 
