@@ -56,9 +56,13 @@ def crawl():
                fo.close()
             if int(counter>1):
                print("*****************************************************")
-               print("*****************************************************")
+               print("**                                                 **")
+               print("**                                                 **")
+               print("**                                                 **")   
                print("Currently work on Market=%s, StockID=%s, Page=%s" % (market, stockid, page))
-               print("*****************************************************")
+               print("**                                                 **")
+               print("**                                                 **")
+               print("**                                                 **")
                print("*****************************************************")
                yield process.crawl('stocknews', id=stockid, page=str(page))   
             else:
